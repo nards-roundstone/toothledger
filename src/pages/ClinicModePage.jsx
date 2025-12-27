@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import FDIChart from "../components/FDIChart";
 import ToothLegend from "../components/ToothLegend";
 
-// Each tooth now stores condition + regen info
-// shape: { condition: string | null, regenCandidate: boolean, regenNotes: string }
 const ClinicModePage = () => {
     const [selectedToothId, setSelectedToothId] = useState(null);
     const [selectedCondition, setSelectedCondition] = useState(null);
@@ -30,18 +28,7 @@ const ClinicModePage = () => {
     const handleConditionSelect = (condition) => {
         setSelectedCondition(condition);
         if (!selectedToothId) return;
-
         upsertTooth(selectedToothId, { condition });
-    };
-
-    const handleRegenToggle = (checked) => {
-        if (!selectedToothId) return;
-        upsertTooth(selectedToothId, { regenCandidate: checked });
-    };
-
-    const handleRegenNotesChange = (event) => {
-        if (!selectedToothId) return;
-        upsertTooth(selectedToothId, { regenNotes: event.target.value });
     };
 
     const selectedToothInfo = selectedToothId ? toothMap[selectedToothId] : null;
@@ -55,7 +42,7 @@ const ClinicModePage = () => {
                 own ToothLedger via the QR page.
             </p>
 
-            <div className="grid md:grid-cols-[2fr,1fr] gap-4">
+            <div className="grid gap-4 md:grid-cols-[2fr,1fr]">
                 {/* LEFT COLUMN */}
                 <div className="overflow-x-auto">
                     <FDIChart
@@ -68,11 +55,6 @@ const ClinicModePage = () => {
                             <>
                                 Tooth {selectedToothId}:{" "}
                                 {selectedToothInfo?.condition || "no condition set yet"}
-                                {selectedToothInfo?.regenCandidate && (
-                                    <span className="ml-1 text-emerald-700">
-                                        🌱 regen candidate
-                                    </span>
-                                )}
                             </>
                         ) : (
                             "No tooth selected yet."
@@ -80,14 +62,25 @@ const ClinicModePage = () => {
                     </div>
                 </div>
 
+
                 {/* RIGHT COLUMN */}
-                <div>
-                    {/* condition tags, future options, etc */}
+                <div className="space-y-4">
+                    <ToothLegend
+                        selectedCondition={selectedCondition}
+                        onSelectCondition={handleConditionSelect}
+                    />
                 </div>
+
+
+                {!selectedToothId && (
+                    <div className="text-xs text-slate-500">
+                        Select a tooth first, then choose a condition.
+                    </div>
+                )}
             </div>
         </div>
+        </div >
     );
-
 };
 
 export default ClinicModePage;
